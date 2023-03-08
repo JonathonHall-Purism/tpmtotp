@@ -51,10 +51,6 @@
 #include <winsock2.h>
 #endif
 
-#include <openssl/rsa.h>
-#include <openssl/pem.h>
-#include <openssl/evp.h>
-
 #include "tpm.h"
 #include "tpmutil.h"
 #include "tpmfunc.h"
@@ -63,7 +59,7 @@
 
 /* local prototypes */
 
-static void usage() {
+static void printUsage() {
 	printf("Usage: pcrread -ix <pcr index> [-v]\n"
 	       "-ix     : index of PCR to read\n"
 	       "-v     : enable verbose output\n"
@@ -74,7 +70,7 @@ static void usage() {
 	       "pcrread -ix 1\n");
 }
 
-int main(int argc, char * argv[]) {
+static int mymain(int argc, char * argv[]) {
 	int i = 0;
 	int ret = 0;
 	int index = -1;
@@ -94,7 +90,7 @@ int main(int argc, char * argv[]) {
 				}
 			} else {
 				printf("Missing parameter for -ix.\n");
-				usage();
+				printUsage();
 				exit(-1);
 			}
 		} else
@@ -102,11 +98,11 @@ int main(int argc, char * argv[]) {
 			TPM_setlog(1);
 		} else
 		    if (!strcmp("-h",argv[i])) {
-			usage();
+			printUsage();
 			exit(-1);
 		} else {
 			printf("\n%s is not a valid option\n", argv[i]);
-			usage();
+			printUsage();
 			exit(-1);
 		}
 		i++;
@@ -115,14 +111,13 @@ int main(int argc, char * argv[]) {
 
 	if (-1 == index) {
 		printf("Missing or wrong parameter.\n");
-		usage();
+		printUsage();
 		exit(-1);
 	}
 
 	ret = TPM_PcrRead(index, digest);
 
 	if (0 == ret) {
-		printf("Current value of PCR %d: ",index);
 		i = 0;
 		while (i < TPM_HASH_SIZE) {
 			printf("%02x",digest[i]);\
@@ -135,3 +130,6 @@ int main(int argc, char * argv[]) {
 	}
 	exit(ret);
 }
+
+#include "tpm_command.h"
+tpm_command_register("pcrread", mymain, printUsage)

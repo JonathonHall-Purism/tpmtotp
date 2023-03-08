@@ -5,6 +5,7 @@ PROGS += \
 	nv_readvalue \
 	nv_writevalue \
 	ownersetdisable \
+	pcrread \
 	pcrreset \
 	physicaldisable \
 	physicalenable \
@@ -33,7 +34,6 @@ PROGS += \
 	calcfuturepcr \
 
 NOPROGS += \
-	pcrread \
 	certifykey \
 	certifyselftest \
 	chgauth \
